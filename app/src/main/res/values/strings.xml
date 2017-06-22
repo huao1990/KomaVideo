@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">KomaVideo</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="loading_videos_error">Error while loading videos</string>
+</resources>
