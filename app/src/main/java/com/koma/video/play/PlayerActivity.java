@@ -13,13 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.koma.video.util;
+package com.koma.video.play;
 
-import android.net.Uri;
-import android.provider.MediaStore;
+import com.koma.video.base.BaseActivity;
 
-public class Constants {
-    public static final Uri VIDEO_URI = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+/**
+ * Created by koma on 6/22/17.
+ */
 
-    public static final String PATH = "path";
+public class PlayerActivity extends BaseActivity {
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    public int getLayoutId() {
+        return 0;
+    }
 }

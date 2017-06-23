@@ -18,12 +18,12 @@ package com.koma.video.data.source.local;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.provider.MediaStore;
 
 import com.koma.video.data.VideosDataSource;
 import com.koma.video.data.model.Video;
-import com.koma.video.util.KomaLogUtils;
+import com.koma.video.util.Constants;
+import com.koma.video.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +40,6 @@ import io.reactivex.annotations.NonNull;
 @Singleton
 public class VideosLocalDataSource implements VideosDataSource {
     private static final String TAG = VideosLocalDataSource.class.getSimpleName();
-
-    private static final Uri VIDEO_URI = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 
     private static final String VIDEOS_SELECTION = MediaStore.Video.Media.TITLE + " != ''";
     private static final String VIDEOS_SORT_ORDER = MediaStore.Video.Media.DATE_ADDED + " DESC";
@@ -60,7 +58,7 @@ public class VideosLocalDataSource implements VideosDataSource {
 
     @Override
     public Flowable<List<Video>> getVideos() {
-        KomaLogUtils.i(TAG, "getVideos");
+        LogUtils.i(TAG, "getVideos");
 
         return Flowable.create(new FlowableOnSubscribe<List<Video>>() {
             @Override
@@ -77,7 +75,7 @@ public class VideosLocalDataSource implements VideosDataSource {
         List<Video> videoList = new ArrayList<>();
 
 
-        Cursor cursor = resolver.query(VIDEO_URI, VIDEOS_PROJECTION, VIDEOS_SELECTION, null,
+        Cursor cursor = resolver.query(Constants.VIDEO_URI, VIDEOS_PROJECTION, VIDEOS_SELECTION, null,
                 VIDEOS_SORT_ORDER);
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();

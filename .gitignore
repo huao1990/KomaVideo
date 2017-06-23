@@ -51,3 +51,4 @@ tmp
 *.lock
 *.lck
 .externalNativeBuild
+koma_key.jks

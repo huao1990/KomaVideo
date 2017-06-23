@@ -15,6 +15,7 @@
  */
 package com.koma.video.video;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,9 +28,8 @@ import android.view.View;
 import com.koma.video.R;
 import com.koma.video.base.BaseFragment;
 import com.koma.video.data.model.Video;
-import com.koma.video.util.KomaLogUtils;
+import com.koma.video.util.LogUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindColor;
@@ -85,13 +85,13 @@ public class VideosFragment extends BaseFragment implements VideosConstract.View
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        KomaLogUtils.i(TAG, "onViewCreated");
+        LogUtils.i(TAG, "onViewCreated");
 
         initViews();
     }
 
     private void initViews() {
-        mAdapter = new VideosAdapter(mContext, new ArrayList<Video>());
+        mAdapter = new VideosAdapter(mContext);
 
         GridLayoutManager layoutManager = new GridLayoutManager(mContext, 2);
         layoutManager.setOrientation(GridLayoutManager.VERTICAL);
@@ -118,7 +118,7 @@ public class VideosFragment extends BaseFragment implements VideosConstract.View
     public void onStart() {
         super.onStart();
 
-        KomaLogUtils.i(TAG, "onStart");
+        LogUtils.i(TAG, "onStart");
 
         if (mPresenter != null) {
             mPresenter.subscribe();
@@ -129,7 +129,7 @@ public class VideosFragment extends BaseFragment implements VideosConstract.View
     public void onStop() {
         super.onStop();
 
-        KomaLogUtils.i(TAG, "onStop");
+        LogUtils.i(TAG, "onStop");
 
         if (mPresenter != null) {
             mPresenter.unSubscribe();
@@ -142,8 +142,13 @@ public class VideosFragment extends BaseFragment implements VideosConstract.View
     }
 
     @Override
+    public Context getContext() {
+        return mContext;
+    }
+
+    @Override
     public void setLoadingIndicator(final boolean active) {
-        KomaLogUtils.i(TAG, "setLoadingIndicator active : " + active);
+        LogUtils.i(TAG, "setLoadingIndicator active : " + active);
 
         mRefreshLayout.post(new Runnable() {
             @Override
@@ -155,7 +160,7 @@ public class VideosFragment extends BaseFragment implements VideosConstract.View
 
     @Override
     public void showVideos(List<Video> videoList) {
-        KomaLogUtils.i(TAG, "showVideos");
+        LogUtils.i(TAG, "showVideos");
 
         mAdapter.replaceData(videoList);
 
@@ -165,7 +170,7 @@ public class VideosFragment extends BaseFragment implements VideosConstract.View
 
     @Override
     public void showLoadingVideosError() {
-        KomaLogUtils.i(TAG, "showLoadingError");
+        LogUtils.i(TAG, "showLoadingError");
 
         showMessage(mErrorMessage);
     }

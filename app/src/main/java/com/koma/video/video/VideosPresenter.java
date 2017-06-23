@@ -15,9 +15,14 @@
  */
 package com.koma.video.video;
 
+import android.database.ContentObserver;
+import android.os.Handler;
+import android.os.Looper;
+
 import com.koma.video.data.VideosRepository;
 import com.koma.video.data.model.Video;
-import com.koma.video.util.KomaLogUtils;
+import com.koma.video.util.Constants;
+import com.koma.video.util.LogUtils;
 
 import java.util.List;
 
@@ -44,11 +49,15 @@ import io.reactivex.subscribers.DisposableSubscriber;
 public class VideosPresenter implements VideosConstract.Presenter {
     private static final String TAG = VideosPresenter.class.getSimpleName();
 
-    private VideosConstract.View mView;
+    private static final int REFRESH_TIME = 500;
 
-    private VideosRepository mRepository;
+    private final VideosConstract.View mView;
 
-    private CompositeDisposable mDisposables;
+    private final VideosRepository mRepository;
+
+    private final CompositeDisposable mDisposables;
+
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     /**
      * Dagger strictly enforces that arguments not marked with {@code @Nullable} are not injected
@@ -73,11 +82,32 @@ public class VideosPresenter implements VideosConstract.Presenter {
 
     @Override
     public void subscribe() {
+        // register vidio uri observer
+        mView.getContext().getContentResolver()
+                .registerContentObserver(Constants.VIDEO_URI, false, mObserver);
+
         loadVideos();
     }
 
+    private final ContentObserver mObserver = new ContentObserver(mHandler) {
+        @Override
+        public void onChange(boolean selfChange) {
+            mHandler.removeCallbacks(mRefreshRunnable);
+            mHandler.postDelayed(mRefreshRunnable, REFRESH_TIME);
+        }
+    };
+
+    private final Runnable mRefreshRunnable = new Runnable() {
+        @Override
+        public void run() {
+            loadVideos();
+        }
+    };
+
     @Override
     public void unSubscribe() {
+        mView.getContext().getContentResolver().unregisterContentObserver(mObserver);
+
         if (mDisposables != null) {
             mDisposables.clear();
         }
@@ -103,7 +133,7 @@ public class VideosPresenter implements VideosConstract.Presenter {
 
                     @Override
                     public void onError(Throwable t) {
-                        KomaLogUtils.e(TAG, "onError error : " + t.toString());
+                        LogUtils.e(TAG, "onError error : " + t.toString());
 
                         mView.setLoadingIndicator(false);
                         mView.showLoadingVideosError();
@@ -111,7 +141,7 @@ public class VideosPresenter implements VideosConstract.Presenter {
 
                     @Override
                     public void onComplete() {
-                        KomaLogUtils.i(TAG, "onComplete");
+                        LogUtils.i(TAG, "onComplete");
 
                         mView.setLoadingIndicator(false);
                     }

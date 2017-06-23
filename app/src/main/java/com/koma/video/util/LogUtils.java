@@ -23,7 +23,7 @@ import com.koma.video.BuildConfig;
  * Created by koma on 6/22/17.
  */
 
-public class KomaLogUtils {
+public class LogUtils {
     private static final boolean IS_DEBUG = BuildConfig.DEBUG;
     private static final String TAG = "KomaVideo";
 

@@ -21,7 +21,7 @@ import android.os.StrictMode;
 import com.bumptech.glide.Glide;
 import com.koma.video.data.DaggerVideosRepositoryComponent;
 import com.koma.video.data.VideosRepositoryComponent;
-import com.koma.video.util.KomaLogUtils;
+import com.koma.video.util.LogUtils;
 import com.squareup.leakcanary.LeakCanary;
 
 public class KomaVideoApplication extends Application {
@@ -33,7 +33,7 @@ public class KomaVideoApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        KomaLogUtils.i(TAG, "onCreate");
+        LogUtils.i(TAG, "onCreate");
 
         enableStrictMode();
 
@@ -55,7 +55,7 @@ public class KomaVideoApplication extends Application {
 
     @Override
     public void onLowMemory() {
-        KomaLogUtils.e(TAG, "onLowMemory");
+        LogUtils.e(TAG, "onLowMemory");
 
         //clear cache
         Glide.get(getApplicationContext()).clearMemory();

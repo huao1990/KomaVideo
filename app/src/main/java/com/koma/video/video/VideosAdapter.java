@@ -18,6 +18,7 @@ package com.koma.video.video;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.koma.video.R;
 import com.koma.video.data.model.Video;
+import com.koma.video.util.LogUtils;
 import com.koma.video.util.Utils;
 
 import java.io.File;
@@ -44,26 +46,49 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
 
     private RequestOptions mRequestOptions;
 
-    public VideosAdapter(Context context, List<Video> data) {
+    public VideosAdapter(Context context) {
         mContext = context;
 
         mRequestOptions = new RequestOptions().centerCrop()
                 .placeholder(R.drawable.ic_default_video)
                 .error(R.drawable.ic_default_video);
-
-        mData = data;
     }
 
-    public void replaceData(List<Video> videoList) {
-        setList(videoList);
+    public void replaceData(final List<Video> videoList) {
+        if (mData == null) {
+            mData = videoList;
 
-        notifyDataSetChanged();
+            notifyItemRangeInserted(0, videoList.size());
+        } else {
+            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                @Override
+                public int getOldListSize() {
+                    return mData.size();
+                }
+
+                @Override
+                public int getNewListSize() {
+                    return videoList.size();
+                }
+
+                @Override
+                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                    return mData.get(oldItemPosition).getId() ==
+                            videoList.get(newItemPosition).getId();
+                }
+
+                @Override
+                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    Video newVideo = videoList.get(newItemPosition);
+                    Video oldVideo = videoList.get(oldItemPosition);
+                    return newVideo.equals(oldVideo);
+                }
+            });
+            mData = videoList;
+
+            result.dispatchUpdatesTo(this);
+        }
     }
-
-    private void setList(List<Video> videoList) {
-        mData = videoList;
-    }
-
 
     @Override
     public VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -74,9 +99,11 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
     @Override
     public void onBindViewHolder(final VideoViewHolder holder, int position) {
         holder.itemView.setTag(position);
+
         Glide.with(mContext).load(Uri.fromFile(new File(mData.get(position).getPath())))
                 .apply(mRequestOptions)
                 .into(holder.mVideoImage);
+
         holder.mVideoTitle.setText(mData.get(position).getTitle());
     }
 

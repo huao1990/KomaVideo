@@ -26,7 +26,8 @@
             android:drawableTop="@drawable/ic_default_video"
             android:gravity="center"
             android:maxLines="1"
-            android:text="No video" />
+            android:text="No video"
+            android:visibility="gone" />
 
     </android.support.design.widget.CoordinatorLayout>
 

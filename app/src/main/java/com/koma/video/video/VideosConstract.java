@@ -15,18 +15,18 @@
  */
 package com.koma.video.video;
 
+import android.content.Context;
+
 import com.koma.video.base.BasePresenter;
 import com.koma.video.base.BaseView;
 import com.koma.video.data.model.Video;
 
 import java.util.List;
 
-/**
- * Created by koma on 5/27/17.
- */
-
 public interface VideosConstract {
     interface View extends BaseView<Presenter> {
+        Context getContext();
+
         void setLoadingIndicator(boolean active);
 
         boolean isActive();

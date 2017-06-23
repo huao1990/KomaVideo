@@ -20,10 +20,6 @@ import android.content.Context;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Created by koma on 6/20/17.
- */
-
 @Module
 public class ApplicationModule {
     private final Context mContext;
