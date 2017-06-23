@@ -28,6 +28,7 @@ import android.view.View;
 
 import com.koma.video.base.BaseActivity;
 import com.koma.video.util.ActivityUtils;
+import com.koma.video.util.LogUtils;
 import com.koma.video.video.DaggerVideosComponent;
 import com.koma.video.video.VideosFragment;
 import com.koma.video.video.VideosPresenter;
@@ -62,6 +63,7 @@ public class MainActivity extends BaseActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        LogUtils.i(TAG, "onCreate");
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -79,7 +81,8 @@ public class MainActivity extends BaseActivity
         if (videosFragment == null) {
             videosFragment = VideosFragment.newInstance();
 
-            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), videosFragment, R.id.content_main);
+            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), videosFragment,
+                    R.id.content_main);
         }
 
         DaggerVideosComponent.builder()
@@ -143,6 +146,7 @@ public class MainActivity extends BaseActivity
         } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_exit) {
+            this.finish();
 
         } else if (id == R.id.nav_help) {
 

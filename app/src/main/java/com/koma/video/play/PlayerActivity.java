@@ -15,20 +15,102 @@
  */
 package com.koma.video.play;
 
+import android.content.res.Configuration;
+import android.os.Build;
+import android.os.Bundle;
+
+import com.koma.video.KomaVideoApplication;
+import com.koma.video.R;
 import com.koma.video.base.BaseActivity;
+import com.koma.video.util.ActivityUtils;
+import com.koma.video.util.LogUtils;
+
+import javax.inject.Inject;
 
 /**
  * Created by koma on 6/22/17.
  */
 
 public class PlayerActivity extends BaseActivity {
+    private static final String TAG = PlayerActivity.class.getSimpleName();
+
+    @Inject
+    PlayerPresenter mPresenter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        LogUtils.i(TAG, "onCreate");
+    }
+
     @Override
     public void init() {
+        PlayerFragment playerFragment = (PlayerFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.content_main);
 
+        if (playerFragment == null) {
+            playerFragment = PlayerFragment.newInstance();
+
+            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), playerFragment,
+                    R.id.content_main);
+        }
+
+        DaggerPlayerComponent.builder().videosRepositoryComponent(
+                ((KomaVideoApplication) getApplication()).getVideosRepositoryComponent())
+                .playerPresenterModule(new PlayerPresenterModule(playerFragment))
+                .build()
+                .inject(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        LogUtils.i(TAG, "onStart");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        LogUtils.i(TAG, "onResume");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        LogUtils.i(TAG, "onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        LogUtils.i(TAG, "onStop");
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        LogUtils.i(TAG, "onConfigurationChanged newConfig : " + newConfig.toString());
+    }
+
+    @Override
+    public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
+        super.onMultiWindowModeChanged(isInMultiWindowMode);
+
+        LogUtils.i(TAG, "onMultiWindowModeChanged: " + isInMultiWindowMode);
+    }
+
+    protected boolean isInMultiWindow() {
+        return Build.VERSION.SDK_INT == Build.VERSION_CODES.N && isInMultiWindowMode();
     }
 
     @Override
     public int getLayoutId() {
-        return 0;
+        return R.layout.activity_player;
     }
 }
