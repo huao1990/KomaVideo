@@ -19,6 +19,7 @@ import android.database.ContentObserver;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.koma.video.data.VideosDataSource;
 import com.koma.video.data.VideosRepository;
 import com.koma.video.data.model.Video;
 import com.koma.video.util.Constants;
@@ -28,6 +29,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -83,8 +85,7 @@ public class VideosPresenter implements VideosConstract.Presenter {
     @Override
     public void subscribe() {
         // register vidio uri observer
-        mView.getContext().getContentResolver()
-                .registerContentObserver(Constants.VIDEO_URI, false, mObserver);
+        registerLocalObserver();
 
         loadVideos();
     }
@@ -106,7 +107,7 @@ public class VideosPresenter implements VideosConstract.Presenter {
 
     @Override
     public void unSubscribe() {
-        mView.getContext().getContentResolver().unregisterContentObserver(mObserver);
+        unregisterLocalObserver();
 
         if (mDisposables != null) {
             mDisposables.clear();
@@ -121,43 +122,53 @@ public class VideosPresenter implements VideosConstract.Presenter {
             mDisposables.clear();
         }
 
-        Disposable disposable = mRepository.getVideos()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSubscriber<List<Video>>() {
+        mRepository.loadVideos(new VideosDataSource.LoadVideosCallback() {
+            @Override
+            public void onVideosLoaded(Flowable<List<Video>> flowable) {
+                Disposable disposable = flowable.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableSubscriber<List<Video>>() {
 
-                    @Override
-                    public void onNext(List<Video> videoList) {
-                        onVideosLoaded(videoList);
-                    }
+                            @Override
+                            public void onNext(List<Video> videoList) {
+                                if (mView != null && mView.isActive()) {
+                                    if (videoList.size() == 0) {
+                                        mView.showNoVideos();
+                                    } else {
+                                        mView.showVideos(videoList);
+                                    }
+                                }
+                            }
 
-                    @Override
-                    public void onError(Throwable t) {
-                        LogUtils.e(TAG, "onError error : " + t.toString());
+                            @Override
+                            public void onError(Throwable t) {
+                                LogUtils.e(TAG, "onError error : " + t.toString());
 
-                        mView.setLoadingIndicator(false);
-                        mView.showLoadingVideosError();
-                    }
+                                mView.setLoadingIndicator(false);
+                                mView.showLoadingVideosError();
+                            }
 
-                    @Override
-                    public void onComplete() {
-                        LogUtils.i(TAG, "onComplete");
+                            @Override
+                            public void onComplete() {
+                                LogUtils.i(TAG, "onComplete");
 
-                        mView.setLoadingIndicator(false);
-                    }
-                });
+                                mView.setLoadingIndicator(false);
+                            }
+                        });
 
-        mDisposables.add(disposable);
+                mDisposables.add(disposable);
+            }
+        });
     }
 
     @Override
-    public void onVideosLoaded(List<Video> videoList) {
-        if (mView != null && mView.isActive()) {
-            if (videoList.size() == 0) {
-                mView.showNoVideos();
-            } else {
-                mView.showVideos(videoList);
-            }
-        }
+    public void registerLocalObserver() {
+        mView.getContext().getContentResolver()
+                .registerContentObserver(Constants.VIDEO_URI, false, mObserver);
+    }
+
+    @Override
+    public void unregisterLocalObserver() {
+        mView.getContext().getContentResolver().unregisterContentObserver(mObserver);
     }
 }

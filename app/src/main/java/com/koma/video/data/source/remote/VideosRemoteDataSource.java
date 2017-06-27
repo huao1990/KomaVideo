@@ -15,6 +15,8 @@
  */
 package com.koma.video.data.source.remote;
 
+import android.support.annotation.NonNull;
+
 import com.koma.video.data.VideosDataSource;
 import com.koma.video.data.model.Video;
 import com.koma.video.util.LogUtils;
@@ -36,8 +38,7 @@ public class VideosRemoteDataSource implements VideosDataSource {
     }
 
     @Override
-    public Flowable<List<Video>> getVideos() {
-        LogUtils.i(TAG, "getLocalVideos");
-        return null;
+    public void loadVideos(@NonNull LoadVideosCallback callback) {
+
     }
 }

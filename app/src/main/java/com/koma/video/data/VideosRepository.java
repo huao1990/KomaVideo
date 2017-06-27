@@ -15,16 +15,13 @@
  */
 package com.koma.video.data;
 
-import com.koma.video.data.model.Video;
+import android.support.annotation.NonNull;
+
 import com.koma.video.data.source.local.VideosLocalDataSource;
 import com.koma.video.data.source.remote.VideosRemoteDataSource;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import io.reactivex.Flowable;
 
 @Singleton
 public class VideosRepository implements VideosDataSource {
@@ -41,7 +38,7 @@ public class VideosRepository implements VideosDataSource {
     }
 
     @Override
-    public Flowable<List<Video>> getVideos() {
-        return mLocalDataSource.getVideos();
+    public void loadVideos(@NonNull LoadVideosCallback callback) {
+        mLocalDataSource.loadVideos(callback);
     }
 }

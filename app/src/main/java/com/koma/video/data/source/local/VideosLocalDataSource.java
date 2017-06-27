@@ -19,6 +19,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 
 import com.koma.video.data.VideosDataSource;
 import com.koma.video.data.model.Video;
@@ -35,7 +36,6 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
-import io.reactivex.annotations.NonNull;
 
 @Singleton
 public class VideosLocalDataSource implements VideosDataSource {
@@ -57,23 +57,24 @@ public class VideosLocalDataSource implements VideosDataSource {
     }
 
     @Override
-    public Flowable<List<Video>> getVideos() {
-        LogUtils.i(TAG, "getVideos");
+    public void loadVideos(@NonNull final LoadVideosCallback callback) {
+        LogUtils.i(TAG, "loadVideos");
 
-        return Flowable.create(new FlowableOnSubscribe<List<Video>>() {
+        final Flowable<List<Video>> flowable = Flowable.create(new FlowableOnSubscribe<List<Video>>() {
             @Override
             public void subscribe(@NonNull FlowableEmitter<List<Video>> e) throws Exception {
                 e.onNext(listVideos());
                 e.onComplete();
             }
         }, BackpressureStrategy.LATEST);
+
+        callback.onVideosLoaded(flowable);
     }
 
     private List<Video> listVideos() {
         ContentResolver resolver = mContext.getContentResolver();
 
         List<Video> videoList = new ArrayList<>();
-
 
         Cursor cursor = resolver.query(Constants.VIDEO_URI, VIDEOS_PROJECTION, VIDEOS_SELECTION, null,
                 VIDEOS_SORT_ORDER);

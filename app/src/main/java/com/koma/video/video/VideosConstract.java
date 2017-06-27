@@ -41,6 +41,8 @@ public interface VideosConstract {
     interface Presenter extends BasePresenter {
         void loadVideos();
 
-        void onVideosLoaded(List<Video> videoList);
+        void registerLocalObserver();
+
+        void unregisterLocalObserver();
     }
 }

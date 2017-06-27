@@ -15,6 +15,8 @@
  */
 package com.koma.video.data;
 
+import android.support.annotation.NonNull;
+
 import com.koma.video.data.model.Video;
 
 import java.util.List;
@@ -23,5 +25,11 @@ import io.reactivex.Flowable;
 
 
 public interface VideosDataSource {
-    Flowable<List<Video>> getVideos();
+
+    interface LoadVideosCallback {
+
+        void onVideosLoaded(Flowable<List<Video>> videos);
+    }
+
+    void loadVideos(@NonNull LoadVideosCallback callback);
 }
