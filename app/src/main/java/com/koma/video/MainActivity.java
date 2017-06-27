@@ -15,6 +15,7 @@
  */
 package com.koma.video;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -27,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.koma.video.base.BaseActivity;
+import com.koma.video.setting.SettingsActivity;
 import com.koma.video.util.ActivityUtils;
 import com.koma.video.util.LogUtils;
 import com.koma.video.video.DaggerVideosComponent;
@@ -144,7 +146,7 @@ public class MainActivity extends BaseActivity
         } else if (id == R.id.nav_send) {
 
         } else if (id == R.id.nav_settings) {
-
+            startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.nav_exit) {
             this.finish();
 

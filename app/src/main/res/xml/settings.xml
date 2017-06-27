@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="More">
+        <SwitchPreference
+            android:checked="true"
+            android:defaultValue="true"
+            android:order="0"
+            android:title="自动切换日夜模式" />
+        <Preference
+            android:defaultValue="8"
+            android:order="1"
+            android:summary="08:00"
+            android:title="日间模式开始时间" />
+        <Preference
+            android:defaultValue="18"
+            android:order="2"
+            android:summary="18:00"
+            android:title="夜间模式开始时间" />
+        <Preference
+            android:order="3"
+            android:title="主题" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
