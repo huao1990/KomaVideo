@@ -38,7 +38,8 @@ public class KomaVideoApplication extends Application {
         enableStrictMode();
 
         mRepositoryComponent = DaggerVideosRepositoryComponent.builder()
-                .applicationModule(new ApplicationModule(getApplicationContext())).build();
+                .applicationModule(new ApplicationModule(getApplicationContext()))
+                .build();
 
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.

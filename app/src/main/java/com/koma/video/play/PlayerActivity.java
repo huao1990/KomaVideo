@@ -42,10 +42,11 @@ public class PlayerActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         LogUtils.i(TAG, "onCreate");
+
+        init();
     }
 
-    @Override
-    public void init() {
+    private void init() {
         PlayerFragment playerFragment = (PlayerFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.content_main);
 

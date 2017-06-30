@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.koma.video.video;
+package com.koma.video.folder;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
@@ -30,7 +29,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.koma.video.R;
 import com.koma.video.data.model.Video;
-import com.koma.video.util.Utils;
 
 import java.io.File;
 import java.util.List;
@@ -38,14 +36,18 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewHolder> {
-    private List<Video> mData;
+/**
+ * Created by koma on 6/30/17.
+ */
+
+public class FoldersAdapter extends RecyclerView.Adapter<FoldersAdapter.FoldersViewHolder> {
+    private List<List<Video>> mData;
 
     private Context mContext;
 
     private RequestOptions mRequestOptions;
 
-    public VideosAdapter(Context context) {
+    public FoldersAdapter(Context context) {
         mContext = context;
 
         setHasStableIds(true);
@@ -55,11 +57,11 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
                 .error(R.drawable.ic_default_video);
     }
 
-    public void replaceData(final List<Video> videoList) {
+    public void replaceData(final List<List<Video>> folderList) {
         if (mData == null) {
-            mData = videoList;
+            mData = folderList;
 
-            notifyItemRangeInserted(0, videoList.size());
+            notifyItemRangeInserted(0, folderList.size());
         } else {
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                 @Override
@@ -69,43 +71,64 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
 
                 @Override
                 public int getNewListSize() {
-                    return videoList.size();
+                    return folderList.size();
                 }
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return mData.get(oldItemPosition).getId() ==
-                            videoList.get(newItemPosition).getId();
+                    List<Video> oldList = mData.get(oldItemPosition);
+                    List<Video> newList = folderList.get(newItemPosition);
+                    if (oldList.size() != newList.size()) {
+                        return false;
+                    } else {
+                        for (int i = 0; i < oldList.size(); i++) {
+                            if (newList.get(i).getId() == oldList.get(i).getId()) {
+                                continue;
+                            }
+                            return true;
+                        }
+                        return false;
+                    }
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    Video newVideo = videoList.get(newItemPosition);
-                    Video oldVideo = videoList.get(oldItemPosition);
-                    return newVideo.equals(oldVideo);
+                    List<Video> newVideoList = folderList.get(newItemPosition);
+                    List<Video> oldVideoList = folderList.get(oldItemPosition);
+                    if (newVideoList.size() != oldVideoList.size()) {
+                        return false;
+                    } else {
+                        for (int i = 0; i < newVideoList.size(); i++) {
+                            if (newVideoList.get(i).equals(oldVideoList.get(i))) {
+                                continue;
+                            }
+                            return true;
+                        }
+                        return false;
+                    }
                 }
             });
-            mData = videoList;
+            mData = folderList;
 
             result.dispatchUpdatesTo(this);
         }
     }
 
     @Override
-    public VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FoldersViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.item_video, parent, false);
-        return new VideoViewHolder(view);
+        return new FoldersViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final VideoViewHolder holder, int position) {
+    public void onBindViewHolder(FoldersViewHolder holder, int position) {
         holder.itemView.setTag(position);
 
-        Glide.with(mContext).load(Uri.fromFile(new File(mData.get(position).getPath())))
+        Glide.with(mContext).load(Uri.fromFile(new File(mData.get(position).get(0).getPath())))
                 .apply(mRequestOptions)
                 .into(holder.mVideoImage);
 
-        holder.mVideoTitle.setText(mData.get(position).getTitle());
+        holder.mVideoTitle.setText(mData.get(position).get(0).getFolderPath());
     }
 
     @Override
@@ -113,27 +136,16 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
         return mData == null ? 0 : mData.size();
     }
 
-    class VideoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    static class FoldersViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.iv_video)
         ImageView mVideoImage;
         @BindView(R.id.tv_title)
         TextView mVideoTitle;
 
-        public VideoViewHolder(View view) {
+        public FoldersViewHolder(View view) {
             super(view);
 
             ButterKnife.bind(this, view);
-
-            itemView.setOnClickListener(this);
-        }
-
-        @Override
-        public void onClick(View v) {
-            int position = (int) v.getTag();
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            String type = "video/*";
-            intent.setDataAndType(Utils.getVideoUri(mData.get(position).getId()), type);
-            mContext.startActivity(intent);
         }
     }
 }

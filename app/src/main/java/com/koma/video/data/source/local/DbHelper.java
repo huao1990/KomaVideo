@@ -13,32 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.koma.video.base;
+package com.koma.video.data.source.local;
 
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
-import com.koma.video.R;
+public class DbHelper extends SQLiteOpenHelper {
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-public abstract class BaseActivity extends AppCompatActivity {
-    @BindView(R.id.toolbar)
-    protected Toolbar mToolbar;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(getLayoutId());
-
-        ButterKnife.bind(this);
-
-        setSupportActionBar(mToolbar);
+    public DbHelper(Context context) {
+        super(context, DbConstants.DB_NAME, null, DbConstants.DB_VERSION);
     }
 
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        if (db.isReadOnly()) {
+            db = getWritableDatabase();
+        }
+        db.execSQL(DbConstants.Movies.CREATE_SQL);
+    }
 
-    public abstract int getLayoutId();
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    }
 }

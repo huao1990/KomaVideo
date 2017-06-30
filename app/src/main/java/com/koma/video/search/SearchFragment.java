@@ -13,32 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.koma.video.base;
+package com.koma.video.search;
 
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.koma.video.base.BaseFragment;
 
-import com.koma.video.R;
+/**
+ * Created by koma on 6/30/17.
+ */
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-public abstract class BaseActivity extends AppCompatActivity {
-    @BindView(R.id.toolbar)
-    protected Toolbar mToolbar;
+public class SearchFragment extends BaseFragment {
+    private static final String TAG = SearchFragment.class.getSimpleName();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(getLayoutId());
-
-        ButterKnife.bind(this);
-
-        setSupportActionBar(mToolbar);
+    public int getLayoutId() {
+        return 0;
     }
-
-
-    public abstract int getLayoutId();
 }

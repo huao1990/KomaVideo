@@ -13,25 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.koma.video.video;
+package com.koma.video.search;
 
-import dagger.Module;
-import dagger.Provides;
+import com.koma.video.util.LogUtils;
+
+import javax.inject.Inject;
 
 /**
- * This is a Dagger module. We use this to pass in the View dependency to the
- * {@link VideosPresenter}.
+ * Created by koma on 6/30/17.
  */
-@Module
-public class VideosPresenterModule {
-    private final VideosContract.View mView;
 
-    public VideosPresenterModule(VideosContract.View view) {
+public class SearchPresenter implements SearchContract.Presenter {
+    public static final String TAG = SearchPresenter.class.getSimpleName();
+
+    private SearchContract.View mView;
+
+    @Inject
+    public SearchPresenter(SearchContract.View view) {
         mView = view;
     }
 
-    @Provides
-    VideosContract.View provideVideosContractView() {
-        return mView;
+    @Inject
+    void setUpListener() {
+        mView.setPresenter(this);
+    }
+
+    @Override
+    public void subscribe() {
+        LogUtils.i(TAG, "subscribe");
+    }
+
+    @Override
+    public void unSubscribe() {
+        LogUtils.i(TAG, "unSubscribe");
     }
 }

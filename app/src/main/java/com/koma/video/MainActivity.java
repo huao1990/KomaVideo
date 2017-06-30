@@ -15,33 +15,34 @@
  */
 package com.koma.video;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.koma.video.base.BaseActivity;
+import com.koma.video.base.BasePermissionActivity;
+import com.koma.video.folder.FoldersFragment;
 import com.koma.video.setting.SettingsActivity;
-import com.koma.video.util.ActivityUtils;
 import com.koma.video.util.LogUtils;
-import com.koma.video.video.DaggerVideosComponent;
 import com.koma.video.video.VideosFragment;
-import com.koma.video.video.VideosPresenter;
-import com.koma.video.video.VideosPresenterModule;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class MainActivity extends BaseActivity
+public class MainActivity extends BasePermissionActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -51,15 +52,16 @@ public class MainActivity extends BaseActivity
     DrawerLayout mDrawer;
     @BindView(R.id.nav_view)
     NavigationView mNavigationView;
+    @BindView(R.id.tab_layout)
+    TabLayout mTabLayout;
+    @BindView(R.id.view_pager)
+    ViewPager mViewPager;
 
     @OnClick(R.id.fab)
     void onFabClick(View view) {
         Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
     }
-
-    @Inject
-    VideosPresenter mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +78,15 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
-    public void init() {
-        VideosFragment videosFragment = (VideosFragment) getSupportFragmentManager()
+    public String[] getPermissions() {
+        return new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE};
+    }
+
+    @Override
+    public void onPermissonGranted() {
+        /*VideosFragment videosFragment = (VideosFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.content_main);
 
         if (videosFragment == null) {
@@ -92,7 +101,29 @@ public class MainActivity extends BaseActivity
                         ((KomaVideoApplication) getApplication()).getVideosRepositoryComponent())
                 .videosPresenterModule(new VideosPresenterModule(videosFragment))
                 .build()
-                .inject(this);
+                .inject(this);*/
+
+        MainPagerAdapter adapter = new MainPagerAdapter(getSupportFragmentManager());
+        mViewPager.setAdapter(adapter);
+        mViewPager.setCurrentItem(0);
+        mViewPager.setOffscreenPageLimit(1);
+        mTabLayout.setupWithViewPager(mViewPager, true);
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     @Override
@@ -124,8 +155,10 @@ public class MainActivity extends BaseActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_search) {
             return true;
+        } else if (id == R.id.action_sort) {
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -156,5 +189,43 @@ public class MainActivity extends BaseActivity
 
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private static final class MainPagerAdapter extends FragmentPagerAdapter {
+        private static final int TAB_COUNT = 2;
+
+        public MainPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Fragment fragment;
+            switch (position) {
+                case 0:
+                    fragment = VideosFragment.newInstance();
+                    return fragment;
+                case 1:
+                    fragment = FoldersFragment.newInstance();
+                    return fragment;
+                default:
+                    return null;
+
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return TAB_COUNT;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            if (position == 0) {
+                return "All videos";
+            } else {
+                return "Folders";
+            }
+        }
     }
 }

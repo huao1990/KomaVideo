@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.koma.video.video;
+package com.koma.video.folder;
 
 import android.database.ContentObserver;
 import android.os.Handler;
@@ -24,6 +24,7 @@ import com.koma.video.data.VideosRepository;
 import com.koma.video.data.model.Video;
 import com.koma.video.util.Constants;
 import com.koma.video.util.LogUtils;
+import com.koma.video.util.Utils;
 
 import java.util.List;
 
@@ -31,29 +32,23 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.DisposableSubscriber;
 
 /**
- * Listens to user actions from the UI ({@link VideosFragment}), retrieves the data and updates the
- * UI as required.
- * <p/>
- * By marking the constructor with {@code @Inject}, Dagger injects the dependencies required to
- * create an instance of the TasksPresenter (if it fails, it emits a compiler error).  It uses
- * {@link VideosPresenterModule} to do so.
- * <p/>
- * Dagger generated code doesn't require public access to the constructor or class, and
- * therefore, to ensure the developer doesn't instantiate the class manually and bypasses Dagger,
- * it's good practice minimise the visibility of the class/constructor as much as possible.
- **/
-public class VideosPresenter implements VideosContract.Presenter {
-    private static final String TAG = VideosPresenter.class.getSimpleName();
+ * Created by koma on 6/30/17.
+ */
+
+public class FoldersPresenter implements FoldersContract.Presenter {
+    private static final String TAG = FoldersPresenter.class.getSimpleName();
 
     private static final int REFRESH_TIME = 500;
 
-    private final VideosContract.View mView;
+    private final FoldersContract.View mView;
 
     private final VideosRepository mRepository;
 
@@ -66,7 +61,7 @@ public class VideosPresenter implements VideosContract.Presenter {
      * with {@code @Nullable} values.
      */
     @Inject
-    public VideosPresenter(VideosContract.View view, VideosRepository repository) {
+    public FoldersPresenter(FoldersContract.View view, VideosRepository repository) {
         mView = view;
 
         mRepository = repository;
@@ -87,7 +82,7 @@ public class VideosPresenter implements VideosContract.Presenter {
         // register vidio uri observer
         registerLocalObserver();
 
-        loadVideos();
+        loadFolders();
     }
 
     private final ContentObserver mObserver = new ContentObserver(mHandler) {
@@ -101,7 +96,7 @@ public class VideosPresenter implements VideosContract.Presenter {
     private final Runnable mRefreshRunnable = new Runnable() {
         @Override
         public void run() {
-            loadVideos();
+            loadFolders();
         }
     };
 
@@ -115,7 +110,7 @@ public class VideosPresenter implements VideosContract.Presenter {
     }
 
     @Override
-    public void loadVideos() {
+    public void loadFolders() {
         mView.setLoadingIndicator(true);
 
         if (mDisposables != null) {
@@ -125,17 +120,21 @@ public class VideosPresenter implements VideosContract.Presenter {
         mRepository.loadVideos(new VideosDataSource.LoadVideosCallback() {
             @Override
             public void onVideosLoaded(Flowable<List<Video>> flowable) {
-                Disposable disposable = flowable.subscribeOn(Schedulers.io())
+                Disposable disposable = flowable.map(new Function<List<Video>, List<List<Video>>>() {
+                    @Override
+                    public List<List<Video>> apply(@NonNull List<Video> videoList) throws Exception {
+                        return Utils.getFolders(videoList);
+                    }
+                }).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeWith(new DisposableSubscriber<List<Video>>() {
-
+                        .subscribeWith(new DisposableSubscriber<List<List<Video>>>() {
                             @Override
-                            public void onNext(List<Video> videoList) {
+                            public void onNext(List<List<Video>> lists) {
                                 if (mView != null && mView.isActive()) {
-                                    if (videoList.size() == 0) {
-                                        mView.showNoVideos();
+                                    if (lists.size() == 0) {
+                                        mView.showNoFolders();
                                     } else {
-                                        mView.showVideos(videoList);
+                                        mView.showFolders(lists);
                                     }
                                 }
                             }

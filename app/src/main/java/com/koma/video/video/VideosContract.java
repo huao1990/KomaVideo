@@ -13,26 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.koma.video;
+package com.koma.video.video;
 
 import android.content.Context;
 
-import javax.inject.Singleton;
+import com.koma.video.base.BasePresenter;
+import com.koma.video.base.BaseView;
+import com.koma.video.data.model.Video;
 
-import dagger.Module;
-import dagger.Provides;
+import java.util.List;
 
-@Module
-public class ApplicationModule {
-    private final Context mContext;
+public interface VideosContract {
+    interface View extends BaseView<Presenter> {
+        Context getContext();
 
-    public ApplicationModule(Context context) {
-        mContext = context;
+        void setLoadingIndicator(boolean active);
+
+        boolean isActive();
+
+        void showVideos(List<Video> videoList);
+
+        void showLoadingVideosError();
+
+        void showNoVideos();
     }
 
-    @Singleton
-    @Provides
-    public Context provideContext() {
-        return mContext;
+    interface Presenter extends BasePresenter {
+        void loadVideos();
+
+        void registerLocalObserver();
+
+        void unregisterLocalObserver();
     }
 }

@@ -2,8 +2,33 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_sort"
+        android:icon="@drawable/ic_sort_24dp"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:title="@string/action_sort"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/sort_by_name"
+                android:orderInCategory="100"
+                android:title="@string/sort_by_name"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/sort_by_added_time"
+                android:orderInCategory="100"
+                android:title="@string/sort_by_add_time"
+                app:showAsAction="ifRoom" />
+            <item
+                android:id="@+id/sort_by_played_time"
+                android:orderInCategory="100"
+                android:title="@string/sort_by_play_time"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_24dp"
+        android:orderInCategory="100"
+        android:title="@string/action_search"
+        app:showAsAction="ifRoom" />
 </menu>

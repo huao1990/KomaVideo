@@ -25,6 +25,7 @@ import com.koma.video.data.VideosDataSource;
 import com.koma.video.data.model.Video;
 import com.koma.video.util.Constants;
 import com.koma.video.util.LogUtils;
+import com.koma.video.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +85,7 @@ public class VideosLocalDataSource implements VideosDataSource {
                 Video video = new Video();
                 video.setId(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media._ID)));
                 video.setPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
+                video.setFolderPath(Utils.getFolderPath(video.getPath()));
                 video.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.TITLE)));
                 videoList.add(video);
             } while (cursor.moveToNext());

@@ -13,36 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.koma.video.video;
-
-import android.content.Context;
+package com.koma.video.search;
 
 import com.koma.video.base.BasePresenter;
 import com.koma.video.base.BaseView;
-import com.koma.video.data.model.Video;
 
-import java.util.List;
+/**
+ * Created by koma on 6/30/17.
+ */
 
-public interface VideosConstract {
+public interface SearchContract {
     interface View extends BaseView<Presenter> {
-        Context getContext();
-
-        void setLoadingIndicator(boolean active);
-
-        boolean isActive();
-
-        void showVideos(List<Video> videoList);
-
-        void showLoadingVideosError();
-
-        void showNoVideos();
     }
 
     interface Presenter extends BasePresenter {
-        void loadVideos();
-
-        void registerLocalObserver();
-
-        void unregisterLocalObserver();
     }
 }

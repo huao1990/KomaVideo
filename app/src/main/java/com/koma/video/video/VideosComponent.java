@@ -15,7 +15,6 @@
  */
 package com.koma.video.video;
 
-import com.koma.video.MainActivity;
 import com.koma.video.data.VideosRepositoryComponent;
 import com.koma.video.util.FragmentScoped;
 
@@ -31,5 +30,5 @@ import dagger.Component;
 @FragmentScoped
 @Component(dependencies = VideosRepositoryComponent.class, modules = {VideosPresenterModule.class})
 public interface VideosComponent {
-    void inject(MainActivity activity);
+    void inject(VideosFragment fragment);
 }

@@ -25,7 +25,7 @@ import java.util.Arrays;
 
 public final class Video {
     private long mId;
-    private String mPath, mTitle;
+    private String mPath, mFolderPath, mTitle;
 
     public long getId() {
         return this.mId;
@@ -37,6 +37,14 @@ public final class Video {
 
     public String getPath() {
         return this.mPath;
+    }
+
+    public void setFolderPath(String folderPath) {
+        this.mFolderPath = folderPath;
+    }
+
+    public String getFolderPath() {
+        return this.mFolderPath;
     }
 
     public void setPath(String path) {

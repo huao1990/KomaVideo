@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.koma.video.video;
+package com.koma.video.folder;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -21,7 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -40,11 +40,11 @@ import butterknife.BindString;
 import butterknife.BindView;
 
 /**
- * Created by koma on 5/27/17.
+ * Created by koma on 6/30/17.
  */
 
-public class VideosFragment extends BaseFragment implements VideosContract.View {
-    private static final String TAG = VideosFragment.class.getSimpleName();
+public class FoldersFragment extends BaseFragment implements FoldersContract.View {
+    private static final String TAG = FoldersFragment.class.getSimpleName();
 
     @BindString(R.string.loading_videos_error)
     String mErrorMessage;
@@ -64,17 +64,17 @@ public class VideosFragment extends BaseFragment implements VideosContract.View 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
-    private VideosAdapter mAdapter;
+    private FoldersAdapter mAdapter;
 
     @Inject
-    VideosPresenter mPresenter;
+    FoldersPresenter mPresenter;
 
-    public VideosFragment() {
+    public FoldersFragment() {
         // Requires empty public constructor
     }
 
-    public static VideosFragment newInstance() {
-        return new VideosFragment();
+    public static FoldersFragment newInstance() {
+        return new FoldersFragment();
     }
 
     @Override
@@ -101,19 +101,19 @@ public class VideosFragment extends BaseFragment implements VideosContract.View 
 
         LogUtils.i(TAG, "onActivityCreated");
 
-        DaggerVideosComponent.builder()
+        DaggerFoldersComponent.builder()
                 .videosRepositoryComponent(
                         ((KomaVideoApplication) getActivity().getApplication()).getVideosRepositoryComponent())
-                .videosPresenterModule(new VideosPresenterModule(this))
+                .foldersPresenterModule(new FoldersPresenterModule(this))
                 .build()
                 .inject(this);
     }
 
     private void initViews() {
-        mAdapter = new VideosAdapter(mContext);
+        mAdapter = new FoldersAdapter(mContext);
 
-        GridLayoutManager layoutManager = new GridLayoutManager(mContext, 2);
-        layoutManager.setOrientation(GridLayoutManager.VERTICAL);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
@@ -123,7 +123,7 @@ public class VideosFragment extends BaseFragment implements VideosContract.View 
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mPresenter.loadVideos();
+                mPresenter.loadFolders();
             }
         });
     }
@@ -139,9 +139,10 @@ public class VideosFragment extends BaseFragment implements VideosContract.View 
 
         LogUtils.i(TAG, "onStart");
 
+        LogUtils.i(TAG, "mPresenter :" + mPresenter.hashCode());
+
         if (mPresenter != null) {
             mPresenter.subscribe();
-            LogUtils.i(TAG,"mPresenter :" + mPresenter.hashCode());
         }
     }
 
@@ -157,7 +158,7 @@ public class VideosFragment extends BaseFragment implements VideosContract.View 
     }
 
     @Override
-    public void setPresenter(@NonNull VideosContract.Presenter presenter) {
+    public void setPresenter(@NonNull FoldersContract.Presenter presenter) {
     }
 
     @Override
@@ -178,7 +179,7 @@ public class VideosFragment extends BaseFragment implements VideosContract.View 
     }
 
     @Override
-    public void showVideos(List<Video> videoList) {
+    public void showFolders(List<List<Video>> videoList) {
         LogUtils.i(TAG, "showVideos");
 
         mAdapter.replaceData(videoList);
@@ -203,7 +204,7 @@ public class VideosFragment extends BaseFragment implements VideosContract.View 
     }
 
     @Override
-    public void showNoVideos() {
+    public void showNoFolders() {
         mRecyclerView.setVisibility(View.GONE);
 
         mNoVideosView.setVisibility(View.VISIBLE);

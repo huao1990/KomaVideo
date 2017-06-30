@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.koma.video.video;
+package com.koma.video.search;
+
+import android.support.annotation.NonNull;
 
 import dagger.Module;
 import dagger.Provides;
 
 /**
- * This is a Dagger module. We use this to pass in the View dependency to the
- * {@link VideosPresenter}.
+ * Created by koma on 6/30/17.
  */
 @Module
-public class VideosPresenterModule {
-    private final VideosContract.View mView;
+public class SearchPresenterModule {
+    private final SearchContract.View mView;
 
-    public VideosPresenterModule(VideosContract.View view) {
+    public SearchPresenterModule(@NonNull SearchContract.View view) {
         mView = view;
     }
 
     @Provides
-    VideosContract.View provideVideosContractView() {
+    SearchContract.View provideSearchContractView() {
         return mView;
     }
 }
