@@ -32,7 +32,6 @@ public class Utils {
     }
 
     public static List<List<Video>> getFolders(List<Video> videos) {
-        LogUtils.i("", "getFolders : thread id : " + Thread.currentThread());
         ArrayMap<String, List<Video>> folders = new ArrayMap<>();
         for (Video video : videos) {
             if (folders.containsKey(video.getFolderPath())) {

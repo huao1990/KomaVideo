@@ -50,8 +50,6 @@ public class FoldersAdapter extends RecyclerView.Adapter<FoldersAdapter.FoldersV
     public FoldersAdapter(Context context) {
         mContext = context;
 
-        setHasStableIds(true);
-
         mRequestOptions = new RequestOptions().centerCrop()
                 .placeholder(R.drawable.ic_default_video)
                 .error(R.drawable.ic_default_video);
