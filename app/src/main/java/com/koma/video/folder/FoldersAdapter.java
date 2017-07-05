@@ -18,7 +18,6 @@ package com.koma.video.folder;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,19 +27,21 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.koma.video.R;
+import com.koma.video.base.BaseAdapter;
+import com.koma.video.base.BaseViewHolder;
 import com.koma.video.data.model.Video;
+import com.koma.video.util.Utils;
 
 import java.io.File;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 /**
  * Created by koma on 6/30/17.
  */
 
-public class FoldersAdapter extends RecyclerView.Adapter<FoldersAdapter.FoldersViewHolder> {
+public class FoldersAdapter extends BaseAdapter<FoldersAdapter.FoldersViewHolder> {
     private List<List<Video>> mData;
 
     private Context mContext;
@@ -114,19 +115,21 @@ public class FoldersAdapter extends RecyclerView.Adapter<FoldersAdapter.FoldersV
 
     @Override
     public FoldersViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_video, parent, false);
-        return new FoldersViewHolder(view);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_folder, parent, false);
+        return new FoldersViewHolder(view, this);
     }
 
     @Override
-    public void onBindViewHolder(FoldersViewHolder holder, int position) {
-        holder.itemView.setTag(position);
-
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
         Glide.with(mContext).load(Uri.fromFile(new File(mData.get(position).get(0).getPath())))
                 .apply(mRequestOptions)
-                .into(holder.mVideoImage);
+                .into(((FoldersViewHolder) holder).mFolderImage);
 
-        holder.mVideoTitle.setText(mData.get(position).get(0).getFolderPath());
+        ((FoldersViewHolder) holder).mFolderName.setText(Utils.getFolderName(
+                mData.get(position).get(0).getFolderPath()));
+
+        ((FoldersViewHolder) holder).mFolderInfo.setText(mContext.getResources().getQuantityString(
+                R.plurals.video_count, mData.get(position).size(), mData.get(position).size()));
     }
 
     @Override
@@ -134,16 +137,16 @@ public class FoldersAdapter extends RecyclerView.Adapter<FoldersAdapter.FoldersV
         return mData == null ? 0 : mData.size();
     }
 
-    static class FoldersViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.iv_video)
-        ImageView mVideoImage;
-        @BindView(R.id.tv_title)
-        TextView mVideoTitle;
+    static class FoldersViewHolder extends BaseViewHolder {
+        @BindView(R.id.iv_folder)
+        ImageView mFolderImage;
+        @BindView(R.id.tv_folder_name)
+        TextView mFolderName;
+        @BindView(R.id.tv_folder_info)
+        TextView mFolderInfo;
 
-        public FoldersViewHolder(View view) {
-            super(view);
-
-            ButterKnife.bind(this, view);
+        public FoldersViewHolder(View view, BaseAdapter adapter) {
+            super(view, adapter);
         }
     }
 }

@@ -16,10 +16,17 @@
     <string name="nav_exit">Exit</string>
 
     <string name="action_search">Search</string>
+    <string name="action_info">Info</string>
+    <string name="action_delete">Delete</string>
     <string name="action_sort">Sort</string>
     <string name="sort_by_name">Sort by name</string>
     <string name="sort_by_add_time">Sort by date added</string>
     <string name="sort_by_play_time">Sort by recently played</string>
 
     <string name="loading_videos_error">Error while loading videos</string>
+
+    <plurals name="video_count">
+        <item quantity="one">%d video</item>
+        <item quantity="other">%d videos</item>
+    </plurals>
 </resources>

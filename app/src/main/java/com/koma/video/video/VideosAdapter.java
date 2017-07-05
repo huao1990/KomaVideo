@@ -19,7 +19,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,16 +28,18 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.koma.video.R;
+import com.koma.video.base.BaseAdapter;
+import com.koma.video.base.BaseViewHolder;
 import com.koma.video.data.model.Video;
+import com.koma.video.util.LogUtils;
 import com.koma.video.util.Utils;
 
 import java.io.File;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
-public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewHolder> {
+public class VideosAdapter extends BaseAdapter<VideosAdapter.VideoViewHolder> {
     private List<Video> mData;
 
     private Context mContext;
@@ -46,6 +47,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
     private RequestOptions mRequestOptions;
 
     public VideosAdapter(Context context) {
+        super();
         mContext = context;
 
         setHasStableIds(true);
@@ -94,18 +96,16 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
     @Override
     public VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.item_video, parent, false);
-        return new VideoViewHolder(view);
+        return new VideoViewHolder(view, this);
     }
 
     @Override
-    public void onBindViewHolder(final VideoViewHolder holder, int position) {
-        holder.itemView.setTag(position);
-
+    public void onBindViewHolder(final BaseViewHolder holder, int position) {
         Glide.with(mContext).load(Uri.fromFile(new File(mData.get(position).getPath())))
                 .apply(mRequestOptions)
-                .into(holder.mVideoImage);
+                .into(((VideoViewHolder) holder).mVideoImage);
 
-        holder.mVideoTitle.setText(mData.get(position).getTitle());
+        ((VideoViewHolder) holder).mVideoTitle.setText(mData.get(position).getTitle());
     }
 
     @Override
@@ -113,23 +113,21 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
         return mData == null ? 0 : mData.size();
     }
 
-    class VideoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class VideoViewHolder extends BaseViewHolder implements View.OnClickListener {
         @BindView(R.id.iv_video)
         ImageView mVideoImage;
         @BindView(R.id.tv_title)
         TextView mVideoTitle;
 
-        public VideoViewHolder(View view) {
-            super(view);
-
-            ButterKnife.bind(this, view);
-
-            itemView.setOnClickListener(this);
+        public VideoViewHolder(View view, BaseAdapter adapter) {
+            super(view, adapter);
         }
 
         @Override
         public void onClick(View v) {
-            int position = (int) v.getTag();
+            super.onClick(v);
+
+            int position = getAdapterPosition();
             Intent intent = new Intent(Intent.ACTION_VIEW);
             String type = "video/*";
             intent.setDataAndType(Utils.getVideoUri(mData.get(position).getId()), type);

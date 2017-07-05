@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#D1471C</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="colorBackground">#1A000000</color>
-
     <color name="colorMenu">@android:color/white</color>
+
+    <color name="folderInfoColor">#CCFFFFFF</color>
 </resources>

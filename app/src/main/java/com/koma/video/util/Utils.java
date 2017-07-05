@@ -17,6 +17,7 @@ package com.koma.video.util;
 
 import android.content.ContentUris;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.util.ArrayMap;
 
@@ -27,6 +28,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Utils {
+    /**
+     * API 21
+     *
+     * @see Build.VERSION_CODES#LOLLIPOP
+     */
+    public static boolean hasLollipop() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    }
+
+    /**
+     * API 23
+     *
+     * @see Build.VERSION_CODES#M
+     */
+    public static boolean hasMarshmallow() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+    }
+
+    /**
+     * API 24
+     *
+     * @see Build.VERSION_CODES#N
+     */
+    public static boolean hasNougat() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+    }
+
     public static Uri getVideoUri(long id) {
         return ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id);
     }
@@ -53,5 +81,9 @@ public class Utils {
 
     public static String getFolderPath(String path) {
         return path.substring(0, path.lastIndexOf(File.separator));
+    }
+
+    public static String getFolderName(String folderPath) {
+        return folderPath.substring(folderPath.lastIndexOf(File.separator)+1);
     }
 }

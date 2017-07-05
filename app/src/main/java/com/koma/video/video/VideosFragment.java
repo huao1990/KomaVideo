@@ -17,6 +17,7 @@ package com.koma.video.video;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -27,6 +28,7 @@ import android.view.View;
 
 import com.koma.video.KomaVideoApplication;
 import com.koma.video.R;
+import com.koma.video.base.BaseAdapter;
 import com.koma.video.base.BaseFragment;
 import com.koma.video.data.model.Video;
 import com.koma.video.util.LogUtils;
@@ -43,17 +45,21 @@ import butterknife.BindView;
  * Created by koma on 5/27/17.
  */
 
-public class VideosFragment extends BaseFragment implements VideosContract.View {
+public class VideosFragment extends BaseFragment implements VideosContract.View,
+        BaseAdapter.OnItemClickListener {
     private static final String TAG = VideosFragment.class.getSimpleName();
 
     @BindString(R.string.loading_videos_error)
     String mErrorMessage;
 
     @BindColor(R.color.colorPrimary)
+    @ColorInt
     int mColorPrimary;
     @BindColor(R.color.colorPrimaryDark)
+    @ColorInt
     int mColorPrimaryDark;
     @BindColor(R.color.colorAccent)
+    @ColorInt
     int mColorAccent;
 
     @BindView(R.id.tv_no_videos)
@@ -82,8 +88,6 @@ public class VideosFragment extends BaseFragment implements VideosContract.View 
         super.onCreate(savedInstanceState);
 
         LogUtils.i(TAG, "onCreate");
-
-        // setHasOptionsMenu(true);
     }
 
     @Override
@@ -111,6 +115,7 @@ public class VideosFragment extends BaseFragment implements VideosContract.View 
 
     private void initViews() {
         mAdapter = new VideosAdapter(mContext);
+        mAdapter.setOnItemClickListener(this);
 
         GridLayoutManager layoutManager = new GridLayoutManager(mContext, 2);
         layoutManager.setOrientation(GridLayoutManager.VERTICAL);
@@ -212,5 +217,10 @@ public class VideosFragment extends BaseFragment implements VideosContract.View 
     @Override
     public boolean isActive() {
         return this.isAdded();
+    }
+
+    @Override
+    public boolean onItemClick(int position) {
+        return false;
     }
 }
