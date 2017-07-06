@@ -24,7 +24,8 @@ import butterknife.ButterKnife;
  * Created by koma on 7/5/17.
  */
 
-public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
+        View.OnLongClickListener {
     private BaseAdapter mAdapter;
 
     public BaseViewHolder(View view, BaseAdapter adapter) {
@@ -35,6 +36,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         mAdapter = adapter;
 
         this.itemView.setOnClickListener(this);
+        this.itemView.setOnLongClickListener(this);
     }
 
     @Override
@@ -43,8 +45,22 @@ public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnCl
         if (mAdapter.getItemClickListener() != null) {
             // Get the permission to activate the View from user
             if (mAdapter.getItemClickListener().onItemClick(position)) {
-
+                //// TODO: 7/6/17
             }
         }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        int position = getAdapterPosition();
+        if (mAdapter.getItemLongClickListener() != null) {
+            if (mAdapter.getMode() != BaseAdapter.Mode.MULTI) {
+                mAdapter.setMode(BaseAdapter.Mode.MULTI);
+            }
+
+            mAdapter.getItemLongClickListener().onItemLongClick(position);
+            return true;
+        }
+        return false;
     }
 }

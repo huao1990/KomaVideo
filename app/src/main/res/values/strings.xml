@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">KomaVideo</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -18,15 +18,23 @@
     <string name="action_search">Search</string>
     <string name="action_info">Info</string>
     <string name="action_delete">Delete</string>
+    <string name="action_select_all">Select all</string>
     <string name="action_sort">Sort</string>
     <string name="sort_by_name">Sort by name</string>
     <string name="sort_by_add_time">Sort by date added</string>
     <string name="sort_by_play_time">Sort by recently played</string>
 
+    <string name="no_video">No video</string>
     <string name="loading_videos_error">Error while loading videos</string>
 
     <plurals name="video_count">
         <item quantity="one">%d video</item>
         <item quantity="other">%d videos</item>
+    </plurals>
+
+    <plurals name="multi_mode_title">
+        <item quantity="one"><xliff:g id="count">%d</xliff:g> selected</item>
+        <item quantity="two"><xliff:g id="count">%d</xliff:g> selected</item>
+        <item quantity="other"><xliff:g id="count">%d</xliff:g> selected</item>
     </plurals>
 </resources>

@@ -116,8 +116,6 @@ public class VideosPresenter implements VideosContract.Presenter {
 
     @Override
     public void loadVideos() {
-        mView.setLoadingIndicator(true);
-
         if (mDisposables != null) {
             mDisposables.clear();
         }

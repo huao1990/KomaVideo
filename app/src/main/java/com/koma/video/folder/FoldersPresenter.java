@@ -111,8 +111,6 @@ public class FoldersPresenter implements FoldersContract.Presenter {
 
     @Override
     public void loadFolders() {
-        mView.setLoadingIndicator(true);
-
         if (mDisposables != null) {
             mDisposables.clear();
         }

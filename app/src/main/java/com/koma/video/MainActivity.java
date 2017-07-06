@@ -16,6 +16,7 @@
 package com.koma.video;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -26,9 +27,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,13 +38,15 @@ import com.koma.video.base.BasePermissionActivity;
 import com.koma.video.folder.FoldersFragment;
 import com.koma.video.setting.SettingsActivity;
 import com.koma.video.util.LogUtils;
+import com.koma.video.util.Utils;
 import com.koma.video.video.VideosFragment;
+import com.koma.video.widget.CustomViewPager;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 
 public class MainActivity extends BasePermissionActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ActionMode.Callback {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     @BindView(R.id.fab)
@@ -55,7 +58,7 @@ public class MainActivity extends BasePermissionActivity
     @BindView(R.id.tab_layout)
     TabLayout mTabLayout;
     @BindView(R.id.view_pager)
-    ViewPager mViewPager;
+    CustomViewPager mViewPager;
 
     @OnClick(R.id.fab)
     void onFabClick(View view) {
@@ -86,44 +89,11 @@ public class MainActivity extends BasePermissionActivity
 
     @Override
     public void onPermissonGranted() {
-        /*VideosFragment videosFragment = (VideosFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.content_main);
-
-        if (videosFragment == null) {
-            videosFragment = VideosFragment.newInstance();
-
-            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(), videosFragment,
-                    R.id.content_main);
-        }
-
-        DaggerVideosComponent.builder()
-                .videosRepositoryComponent(
-                        ((KomaVideoApplication) getApplication()).getVideosRepositoryComponent())
-                .videosPresenterModule(new VideosPresenterModule(videosFragment))
-                .build()
-                .inject(this);*/
-
-        MainPagerAdapter adapter = new MainPagerAdapter(getSupportFragmentManager());
+        MainPagerAdapter adapter = new MainPagerAdapter(getSupportFragmentManager(), this);
         mViewPager.setAdapter(adapter);
         mViewPager.setCurrentItem(0);
         mViewPager.setOffscreenPageLimit(1);
         mTabLayout.setupWithViewPager(mViewPager, true);
-
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
     }
 
     @Override
@@ -191,11 +161,60 @@ public class MainActivity extends BasePermissionActivity
         return true;
     }
 
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
+        mViewPager.setPagingEnabled(false);
+
+        if (Utils.hasMarshmallow()) {
+            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark, this.getTheme()));
+        } else if (Utils.hasLollipop()) {
+            //noinspection deprecation
+            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+        return false;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        mDrawer.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mDrawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNDEFINED);
+
+                mViewPager.setPagingEnabled(true);
+
+                if (Utils.hasMarshmallow()) {
+                    getWindow().setStatusBarColor(
+                            getResources().getColor(android.R.color.transparent, getTheme()));
+                } else if (Utils.hasLollipop()) {
+                    //noinspection deprecation
+                    getWindow().setStatusBarColor(getResources().getColor(android.R.color.transparent));
+                }
+            }
+        }, 400);
+    }
+
     private static final class MainPagerAdapter extends FragmentPagerAdapter {
         private static final int TAB_COUNT = 2;
 
-        public MainPagerAdapter(FragmentManager fm) {
+        private Context mContext;
+
+        public MainPagerAdapter(FragmentManager fm, Context context) {
             super(fm);
+
+            mContext = context;
         }
 
         @Override
@@ -222,9 +241,9 @@ public class MainActivity extends BasePermissionActivity
         @Override
         public CharSequence getPageTitle(int position) {
             if (position == 0) {
-                return "All videos";
+                return mContext.getString(R.string.tab_videos);
             } else {
-                return "Folders";
+                return mContext.getString(R.string.tab_folders);
             }
         }
     }

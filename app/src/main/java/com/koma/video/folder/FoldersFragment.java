@@ -20,10 +20,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.koma.video.KomaVideoApplication;
 import com.koma.video.R;
@@ -49,17 +49,10 @@ public class FoldersFragment extends BaseFragment implements FoldersContract.Vie
     @BindString(R.string.loading_videos_error)
     String mErrorMessage;
 
-    @BindColor(R.color.colorPrimary)
-    int mColorPrimary;
-    @BindColor(R.color.colorPrimaryDark)
-    int mColorPrimaryDark;
-    @BindColor(R.color.colorAccent)
-    int mColorAccent;
-
     @BindView(R.id.tv_no_videos)
     View mNoVideosView;
-    @BindView(R.id.refresh_layout)
-    SwipeRefreshLayout mRefreshLayout;
+    @BindView(R.id.progress_bar)
+    ProgressBar mProgressBar;
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -82,8 +75,6 @@ public class FoldersFragment extends BaseFragment implements FoldersContract.Vie
         super.onCreate(savedInstanceState);
 
         LogUtils.i(TAG, "onCreate");
-
-        // setHasOptionsMenu(true);
     }
 
     @Override
@@ -118,14 +109,6 @@ public class FoldersFragment extends BaseFragment implements FoldersContract.Vie
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
-
-        mRefreshLayout.setColorSchemeColors(mColorPrimary, mColorAccent, mColorPrimary);
-        mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mPresenter.loadFolders();
-            }
-        });
     }
 
     @Override
@@ -138,8 +121,6 @@ public class FoldersFragment extends BaseFragment implements FoldersContract.Vie
         super.onStart();
 
         LogUtils.i(TAG, "onStart");
-
-        LogUtils.i(TAG, "mPresenter :" + mPresenter.hashCode());
 
         if (mPresenter != null) {
             mPresenter.subscribe();
@@ -170,12 +151,9 @@ public class FoldersFragment extends BaseFragment implements FoldersContract.Vie
     public void setLoadingIndicator(final boolean active) {
         LogUtils.i(TAG, "setLoadingIndicator active : " + active);
 
-        mRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mRefreshLayout.setRefreshing(active);
-            }
-        });
+        if (!active && mProgressBar.getVisibility() == View.VISIBLE) {
+            mProgressBar.setVisibility(View.GONE);
+        }
     }
 
     @Override

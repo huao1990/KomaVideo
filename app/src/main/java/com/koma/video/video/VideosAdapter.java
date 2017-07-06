@@ -31,7 +31,6 @@ import com.koma.video.R;
 import com.koma.video.base.BaseAdapter;
 import com.koma.video.base.BaseViewHolder;
 import com.koma.video.data.model.Video;
-import com.koma.video.util.LogUtils;
 import com.koma.video.util.Utils;
 
 import java.io.File;
@@ -50,7 +49,6 @@ public class VideosAdapter extends BaseAdapter<VideosAdapter.VideoViewHolder> {
         super();
         mContext = context;
 
-        setHasStableIds(true);
 
         mRequestOptions = new RequestOptions().centerCrop()
                 .placeholder(R.drawable.ic_default_video)
@@ -113,7 +111,7 @@ public class VideosAdapter extends BaseAdapter<VideosAdapter.VideoViewHolder> {
         return mData == null ? 0 : mData.size();
     }
 
-    class VideoViewHolder extends BaseViewHolder implements View.OnClickListener {
+    class VideoViewHolder extends BaseViewHolder {
         @BindView(R.id.iv_video)
         ImageView mVideoImage;
         @BindView(R.id.tv_title)
@@ -125,13 +123,16 @@ public class VideosAdapter extends BaseAdapter<VideosAdapter.VideoViewHolder> {
 
         @Override
         public void onClick(View v) {
-            super.onClick(v);
+            if (getMode() == Mode.IDLE) {
+                int position = getAdapterPosition();
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                String type = "video/*";
+                intent.setDataAndType(Utils.getVideoUri(mData.get(position).getId()), type);
+                mContext.startActivity(intent);
+            } else {
+                super.onClick(v);
+            }
 
-            int position = getAdapterPosition();
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            String type = "video/*";
-            intent.setDataAndType(Utils.getVideoUri(mData.get(position).getId()), type);
-            mContext.startActivity(intent);
         }
     }
 }
