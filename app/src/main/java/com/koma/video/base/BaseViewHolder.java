@@ -17,7 +17,11 @@ package com.koma.video.base;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageButton;
 
+import com.koma.video.R;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -27,6 +31,9 @@ import butterknife.ButterKnife;
 public class BaseViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,
         View.OnLongClickListener {
     private BaseAdapter mAdapter;
+
+    @BindView(R.id.ib_check)
+    public ImageButton mCheckButton;
 
     public BaseViewHolder(View view, BaseAdapter adapter) {
         super(view);

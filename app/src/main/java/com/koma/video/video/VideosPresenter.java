@@ -156,7 +156,7 @@ public class VideosPresenter implements VideosContract.Presenter {
 
                 mDisposables.add(disposable);
             }
-        });
+        }, mView.getFolderPath());
     }
 
     @Override

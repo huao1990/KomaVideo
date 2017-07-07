@@ -9,13 +9,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import static com.koma.video.base.BaseAdapter.Mode.IDLE;
 import static com.koma.video.base.BaseAdapter.Mode.MULTI;
+import static com.koma.video.base.BaseAdapter.Payload.PAYLOAD_IMAGE;
+import static com.koma.video.base.BaseAdapter.Payload.PAYLOAD_MULTI;
 
 /**
  * Created by koma on 7/5/17.
@@ -39,6 +40,13 @@ public abstract class BaseAdapter<T extends BaseViewHolder> extends RecyclerView
     @Retention(RetentionPolicy.SOURCE)
     public @interface Mode {
         int IDLE = 0, MULTI = 1;
+    }
+
+    @SuppressLint("UniqueConstants")
+    @IntDef({PAYLOAD_IMAGE, PAYLOAD_MULTI})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Payload {
+        int PAYLOAD_IMAGE = 0, PAYLOAD_MULTI = 1;
     }
 
     private int mMode;
@@ -92,6 +100,7 @@ public abstract class BaseAdapter<T extends BaseViewHolder> extends RecyclerView
         if (mode == IDLE) {
             clearSelection();
         }
+
         this.mMode = mode;
     }
 
@@ -112,7 +121,7 @@ public abstract class BaseAdapter<T extends BaseViewHolder> extends RecyclerView
             addSelection(position);
         }
 
-        notifyItemChanged(position);
+        notifyItemChanged(position, Payload.PAYLOAD_MULTI);
     }
 
     public final boolean addSelection(int position) {
@@ -152,13 +161,13 @@ public abstract class BaseAdapter<T extends BaseViewHolder> extends RecyclerView
             } else {
                 // Optimization for ItemRangeChanged
                 if (positionStart + itemCount == i) {
-                    notifySelectionChanged(positionStart, itemCount);
+                    notifySelectionChanged(positionStart, itemCount, PAYLOAD_MULTI);
                     itemCount = 0;
                     positionStart = i;
                 }
             }
         }
-        notifySelectionChanged(positionStart, getItemCount());
+        notifySelectionChanged(positionStart, getItemCount(), PAYLOAD_MULTI);
     }
 
     public boolean isSelectAll() {
@@ -166,7 +175,7 @@ public abstract class BaseAdapter<T extends BaseViewHolder> extends RecyclerView
     }
 
     public void clearSelection() {
-        synchronized (mSelectedPositions) {
+       /* synchronized (mSelectedPositions) {
             Iterator<Integer> iterator = mSelectedPositions.iterator();
             int positionStart = 0, itemCount = 0;
             // The notification is done only on items that are currently selected.
@@ -178,19 +187,22 @@ public abstract class BaseAdapter<T extends BaseViewHolder> extends RecyclerView
                     itemCount++;
                 } else {
                     // Notify previous items in range
-                    notifySelectionChanged(positionStart, itemCount);
+                    notifySelectionChanged(positionStart, itemCount, PAYLOAD_MULTI);
                     positionStart = position;
                     itemCount = 1;
                 }
-            }
+            }*/
             // Notify remaining items in range
-            notifySelectionChanged(positionStart, itemCount);
+        mSelectedPositions.clear();
+
+        if (getItemCount() > 0) {
+            notifySelectionChanged(0, getItemCount(), PAYLOAD_MULTI);
         }
     }
 
-    private void notifySelectionChanged(int positionStart, int itemCount) {
+    private void notifySelectionChanged(int positionStart, int itemCount, @Payload int payLoad) {
         if (itemCount > 0) {
-            notifyItemRangeChanged(positionStart, itemCount);
+            notifyItemRangeChanged(positionStart, itemCount, payLoad);
         }
     }
 

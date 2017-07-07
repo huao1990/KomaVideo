@@ -16,11 +16,13 @@
 package com.koma.video.folder;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.util.DiffUtil;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,6 +33,7 @@ import com.koma.video.base.BaseAdapter;
 import com.koma.video.base.BaseViewHolder;
 import com.koma.video.data.model.Video;
 import com.koma.video.util.Utils;
+import com.koma.video.video.VideosFragment;
 
 import java.io.File;
 import java.util.List;
@@ -80,29 +83,17 @@ public class FoldersAdapter extends BaseAdapter<FoldersAdapter.FoldersViewHolder
                     if (oldList.size() != newList.size()) {
                         return false;
                     } else {
-                        for (int i = 0; i < oldList.size(); i++) {
-                            if (newList.get(i).getId() == oldList.get(i).getId()) {
-                                continue;
-                            }
-                            return true;
-                        }
-                        return false;
+                        return true;
                     }
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
                     List<Video> newVideoList = folderList.get(newItemPosition);
-                    List<Video> oldVideoList = folderList.get(oldItemPosition);
-                    if (newVideoList.size() != oldVideoList.size()) {
-                        return false;
+                    List<Video> oldVideoList = mData.get(oldItemPosition);
+                    if (newVideoList.get(0).equals(oldVideoList.get(0))) {
+                        return true;
                     } else {
-                        for (int i = 0; i < newVideoList.size(); i++) {
-                            if (newVideoList.get(i).equals(oldVideoList.get(i))) {
-                                continue;
-                            }
-                            return true;
-                        }
                         return false;
                     }
                 }
@@ -137,7 +128,7 @@ public class FoldersAdapter extends BaseAdapter<FoldersAdapter.FoldersViewHolder
         return mData == null ? 0 : mData.size();
     }
 
-    static class FoldersViewHolder extends BaseViewHolder {
+    public class FoldersViewHolder extends BaseViewHolder {
         @BindView(R.id.iv_folder)
         ImageView mFolderImage;
         @BindView(R.id.tv_folder_name)
@@ -147,6 +138,19 @@ public class FoldersAdapter extends BaseAdapter<FoldersAdapter.FoldersViewHolder
 
         public FoldersViewHolder(View view, BaseAdapter adapter) {
             super(view, adapter);
+        }
+
+        @Override
+        public void onClick(View view) {
+            if (getMode() == Mode.IDLE) {
+                int position = getAdapterPosition();
+                Intent intent = new Intent(mContext, FolderDetailActivity.class);
+                intent.putExtra(VideosFragment.FOLDER_PATH, mData.get(position).get(0).getFolderPath());
+                mContext.startActivity(intent);
+            } else {
+                super.onClick(view);
+            }
+
         }
     }
 }

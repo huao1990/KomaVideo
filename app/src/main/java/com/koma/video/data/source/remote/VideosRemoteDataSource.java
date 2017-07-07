@@ -18,14 +18,8 @@ package com.koma.video.data.source.remote;
 import android.support.annotation.NonNull;
 
 import com.koma.video.data.VideosDataSource;
-import com.koma.video.data.model.Video;
-import com.koma.video.util.LogUtils;
-
-import java.util.List;
 
 import javax.inject.Singleton;
-
-import io.reactivex.Flowable;
 
 /**
  * Created by koma on 6/20/17.
@@ -38,7 +32,7 @@ public class VideosRemoteDataSource implements VideosDataSource {
     }
 
     @Override
-    public void loadVideos(@NonNull LoadVideosCallback callback) {
+    public void loadVideos(@NonNull LoadVideosCallback callback, String folderpath) {
 
     }
 }

@@ -34,12 +34,6 @@ public abstract class BasePermissionActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(getLayoutId());
-
-        ButterKnife.bind(this);
-
-        setSupportActionBar(mToolbar);
-
         if (!needRequestStoragePermission()) {
             //// TODO: 5/27/17
             onPermissonGranted();

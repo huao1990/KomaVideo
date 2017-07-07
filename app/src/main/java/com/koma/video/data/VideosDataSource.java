@@ -31,5 +31,5 @@ public interface VideosDataSource {
         void onVideosLoaded(Flowable<List<Video>> videos);
     }
 
-    void loadVideos(@NonNull LoadVideosCallback callback);
+    void loadVideos(@NonNull LoadVideosCallback callback, String folderPath);
 }

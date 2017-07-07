@@ -45,5 +45,17 @@
             android:textColor="@color/folderInfoColor"
             android:textSize="14sp" />
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/ib_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:background="?actionBarItemBackground"
+        android:padding="8dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_uncheck_24dp"
+        android:visibility="gone" />
+
 </android.support.v7.widget.CardView>
 

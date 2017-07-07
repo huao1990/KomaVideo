@@ -17,7 +17,6 @@ package com.koma.video.video;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -32,6 +31,7 @@ import com.koma.video.R;
 import com.koma.video.base.BaseAdapter;
 import com.koma.video.base.BaseFragment;
 import com.koma.video.data.model.Video;
+import com.koma.video.folder.FolderDetailActivity;
 import com.koma.video.util.ActionModeHelper;
 import com.koma.video.util.LogUtils;
 
@@ -39,7 +39,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
 
@@ -51,6 +50,8 @@ public class VideosFragment extends BaseFragment implements VideosContract.View,
         BaseAdapter.OnItemClickListener, BaseAdapter.OnItemLongClickListener,
         BaseAdapter.OnMultiModeChangeListener {
     private static final String TAG = VideosFragment.class.getSimpleName();
+
+    public static final String FOLDER_PATH = "folder_path";
 
     @BindString(R.string.loading_videos_error)
     String mErrorMessage;
@@ -71,12 +72,24 @@ public class VideosFragment extends BaseFragment implements VideosContract.View,
     @Inject
     VideosPresenter mPresenter;
 
+    private String mFolderPath;
+
     public VideosFragment() {
         // Requires empty public constructor
     }
 
     public static VideosFragment newInstance() {
         return new VideosFragment();
+    }
+
+    public static VideosFragment newInstance(String folderPath) {
+        Bundle bundle = new Bundle();
+        bundle.putString(FOLDER_PATH, folderPath);
+
+        VideosFragment videosFragment = VideosFragment.newInstance();
+        videosFragment.setArguments(bundle);
+
+        return videosFragment;
     }
 
     @Override
@@ -113,8 +126,11 @@ public class VideosFragment extends BaseFragment implements VideosContract.View,
         mAdapter = new VideosAdapter(mContext);
         mAdapter.setOnItemClickListener(this);
         mAdapter.setOnItemLongClickListener(this);
+        mAdapter.setMultiModeChangeListener(this);
 
-        mActionModeHelper = new ActionModeHelper(mAdapter, R.menu.multi_mode, (MainActivity) getActivity()) {
+        mActionModeHelper = new ActionModeHelper(mAdapter, R.menu.multi_mode,
+                getActivity() instanceof MainActivity ?
+                        (MainActivity) getActivity() : (FolderDetailActivity) getActivity()) {
             @Override
             public void updateContextTitle(int count) {
                 if (mActionMode != null) {
@@ -166,6 +182,15 @@ public class VideosFragment extends BaseFragment implements VideosContract.View,
     @Override
     public Context getContext() {
         return mContext;
+    }
+
+    @Override
+    public String getFolderPath() {
+        if (getArguments() != null) {
+            return getArguments().getString(FOLDER_PATH);
+        }
+
+        return null;
     }
 
     @Override
@@ -225,11 +250,15 @@ public class VideosFragment extends BaseFragment implements VideosContract.View,
     public void onItemLongClick(int position) {
         LogUtils.i(TAG, "onItemLongClick position : " + position);
 
-        mActionModeHelper.onLongClick((MainActivity) getActivity(), position);
+        mActionModeHelper.onLongClick(getActivity() instanceof MainActivity ?
+                (MainActivity) getActivity() : (FolderDetailActivity) getActivity(), position);
     }
 
     @Override
     public void onMultiModeChange(@BaseAdapter.Mode int mode) {
-
+        if (mode == BaseAdapter.Mode.MULTI) {
+            mAdapter.notifyItemRangeChanged(0, mAdapter.getItemCount(),
+                    BaseAdapter.Payload.PAYLOAD_MULTI);
+        }
     }
 }

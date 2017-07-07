@@ -27,6 +27,8 @@ public interface VideosContract {
     interface View extends BaseView<Presenter> {
         Context getContext();
 
+        String getFolderPath();
+
         void setLoadingIndicator(boolean active);
 
         boolean isActive();

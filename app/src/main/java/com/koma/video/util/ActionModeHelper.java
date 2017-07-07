@@ -170,6 +170,7 @@ public class ActionModeHelper implements ActionMode.Callback {
         // Change mode and deselect everything
         mAdapter.setMode(BaseAdapter.Mode.IDLE);
         mAdapter.clearSelection();
+
         mActionMode = null;
         // Notify the provided callback
         if (mCallback != null) {

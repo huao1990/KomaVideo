@@ -38,7 +38,7 @@ public class VideosRepository implements VideosDataSource {
     }
 
     @Override
-    public void loadVideos(@NonNull LoadVideosCallback callback) {
-        mLocalDataSource.loadVideos(callback);
+    public void loadVideos(@NonNull LoadVideosCallback callback, String folderpath) {
+        mLocalDataSource.loadVideos(callback, folderpath);
     }
 }

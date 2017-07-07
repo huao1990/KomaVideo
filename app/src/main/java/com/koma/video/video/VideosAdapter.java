@@ -98,6 +98,25 @@ public class VideosAdapter extends BaseAdapter<VideosAdapter.VideoViewHolder> {
     }
 
     @Override
+    public void onBindViewHolder(final BaseViewHolder holder, int position, List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            onBindViewHolder(holder, position);
+        } else if ((int) payloads.get(0) == Payload.PAYLOAD_IMAGE) {
+            onBindViewHolder(holder, position);
+        } else if ((int) payloads.get(0) == Payload.PAYLOAD_MULTI) {
+            if (getMode() == Mode.MULTI) {
+                holder.mCheckButton.setVisibility(View.VISIBLE);
+                holder.mCheckButton.setImageResource(isSelected(position)
+                        ? R.drawable.ic_check_24dp : R.drawable.ic_uncheck_24dp);
+            } else {
+                holder.mCheckButton.setVisibility(View.GONE);
+            }
+
+        }
+
+    }
+
+    @Override
     public void onBindViewHolder(final BaseViewHolder holder, int position) {
         Glide.with(mContext).load(Uri.fromFile(new File(mData.get(position).getPath())))
                 .apply(mRequestOptions)

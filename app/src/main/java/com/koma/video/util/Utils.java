@@ -21,6 +21,7 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.util.ArrayMap;
 
+import com.koma.video.data.model.Folder;
 import com.koma.video.data.model.Video;
 
 import java.io.File;

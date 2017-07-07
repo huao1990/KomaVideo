@@ -20,6 +20,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.koma.video.data.VideosDataSource;
 import com.koma.video.data.model.Video;
@@ -58,13 +59,13 @@ public class VideosLocalDataSource implements VideosDataSource {
     }
 
     @Override
-    public void loadVideos(@NonNull final LoadVideosCallback callback) {
-        LogUtils.i(TAG, "loadVideos");
+    public void loadVideos(@NonNull final LoadVideosCallback callback, final String folderpath) {
+        LogUtils.i(TAG, "loadLocalVideos");
 
         final Flowable<List<Video>> flowable = Flowable.create(new FlowableOnSubscribe<List<Video>>() {
             @Override
             public void subscribe(@NonNull FlowableEmitter<List<Video>> e) throws Exception {
-                e.onNext(listVideos());
+                e.onNext(listVideos(folderpath));
                 e.onComplete();
             }
         }, BackpressureStrategy.LATEST);
@@ -72,7 +73,7 @@ public class VideosLocalDataSource implements VideosDataSource {
         callback.onVideosLoaded(flowable);
     }
 
-    private List<Video> listVideos() {
+   /* private List<Video> listVideos() {
         ContentResolver resolver = mContext.getContentResolver();
 
         List<Video> videoList = new ArrayList<>();
@@ -87,6 +88,48 @@ public class VideosLocalDataSource implements VideosDataSource {
                 video.setPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
                 video.setFolderPath(Utils.getFolderPath(video.getPath()));
                 video.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.TITLE)));
+                videoList.add(video);
+            } while (cursor.moveToNext());
+
+            cursor.close();
+            cursor = null;
+        }
+        return videoList;
+    }*/
+
+    private List<Video> listVideos(String folderPath) {
+        boolean hasSelection = !TextUtils.isEmpty(folderPath);
+        StringBuilder selection = new StringBuilder(VIDEOS_SELECTION);
+        ContentResolver resolver = mContext.getContentResolver();
+
+        List<Video> videoList = new ArrayList<>();
+        if (hasSelection) {
+            selection.append("AND (" + MediaStore.Video.Media.DATA + " LIKE '%" + folderPath + "')");
+        }
+
+
+        Cursor cursor = resolver.query(Constants.VIDEO_URI, VIDEOS_PROJECTION, selection.toString(), null,
+                VIDEOS_SORT_ORDER);
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            do {
+                Video video = new Video();
+                video.setId(cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media._ID)));
+
+                video.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.TITLE)));
+
+                video.setPath(cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA)));
+
+                if (hasSelection) {
+                    if (folderPath.equals(Utils.getFolderPath(video.getPath()))) {
+                        video.setFolderPath(folderPath);
+                    } else {
+                        continue;
+                    }
+                } else {
+                    video.setFolderPath(Utils.getFolderPath(video.getPath()));
+                }
+
                 videoList.add(video);
             } while (cursor.moveToNext());
 

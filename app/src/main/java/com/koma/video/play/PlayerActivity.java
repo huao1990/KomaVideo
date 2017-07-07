@@ -15,15 +15,17 @@
  */
 package com.koma.video.play;
 
+import android.Manifest;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.koma.video.KomaVideoApplication;
 import com.koma.video.R;
-import com.koma.video.base.BaseActivity;
+import com.koma.video.base.BasePermissionActivity;
 import com.koma.video.util.ActivityUtils;
 import com.koma.video.util.LogUtils;
+import com.koma.video.util.Utils;
 
 import javax.inject.Inject;
 
@@ -31,7 +33,7 @@ import javax.inject.Inject;
  * Created by koma on 6/22/17.
  */
 
-public class PlayerActivity extends BaseActivity {
+public class PlayerActivity extends BasePermissionActivity {
     private static final String TAG = PlayerActivity.class.getSimpleName();
 
     @Inject
@@ -43,10 +45,36 @@ public class PlayerActivity extends BaseActivity {
 
         LogUtils.i(TAG, "onCreate");
 
-        init();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
-    private void init() {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == android.R.id.home) {
+            onBackPressed();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public String[] getPermissions() {
+        return new String[]{
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.INTERNET
+        };
+    }
+
+    @Override
+    public void onPermissonGranted() {
         PlayerFragment playerFragment = (PlayerFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.content_main);
 
@@ -107,11 +135,11 @@ public class PlayerActivity extends BaseActivity {
     }
 
     protected boolean isInMultiWindow() {
-        return Build.VERSION.SDK_INT == Build.VERSION_CODES.N && isInMultiWindowMode();
+        return Utils.hasNougat() && isInMultiWindowMode();
     }
 
     @Override
     public int getLayoutId() {
-        return R.layout.activity_player;
+        return R.layout.activity_base;
     }
 }

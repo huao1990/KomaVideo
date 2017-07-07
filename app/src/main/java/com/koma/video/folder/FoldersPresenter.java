@@ -155,7 +155,7 @@ public class FoldersPresenter implements FoldersContract.Presenter {
 
                 mDisposables.add(disposable);
             }
-        });
+        }, null);
     }
 
     @Override
